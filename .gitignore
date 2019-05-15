@@ -29,4 +29,4 @@ xcuserdata/
 *.dSYM
 
 *.DS_Store
-!UnsplashAPIKey.plist
+KitchenCatalogue/Domain/Entity/Auth/UnsplashAPIKey.plist
