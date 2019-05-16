@@ -113,15 +113,19 @@ class TimeLineDataStore {
         return serchItems!
     }
     
-    func appendItems(items: [Item]) {
+    private func appendItems(items: [Item]) {
         self.items.append(contentsOf: items)
     }
     
-    func countUpIndex() {
+    private func countUpIndex() {
         self.requestIndex += 1
     }
     
-    func updateLimitIndex(index: Int) {
+    private func updateLimitIndex(index: Int) {
         self.limitIndex = index
+    }
+    
+    func updateRequestIndex(index: Int) {
+        self.requestIndex = index
     }
 }
