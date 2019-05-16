@@ -13,6 +13,13 @@ class TimeLineDataStoreTests: XCTestCase {
     private var dataStore: TimeLineDataStore = TimeLineDataStore(path: Network.domain + "search/photos", keyword: "kitchen", perItem: 20)
     var networkExpectation: XCTestExpectation?
     
+    
+    
+    func testLimitIndex() {
+        self.dataStore.updateRequestIndex(index: 2)
+        XCTAssert(!self.dataStore.requestToUpdate())
+    }
+    
     func testFetchItems() {
         self.dataStore.delegate = self
         self.networkExpectation = self.expectation(description: "connect API")
