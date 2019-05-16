@@ -26,11 +26,15 @@ class TimeLineViewController: BaseViewController {
     private var limitIndex: Int = 1
     private var isRequest: Bool = false
     
+    private var dataStore: TimeLineDataStore = TimeLineDataStore(path: Network.domain + "search/photos",
+                                                                 keyword: "kitchen",
+                                                                 perItem: 20)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.setupLayout()
-        self.load()
+        self.dataStore.requestToUpdate()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -58,88 +62,15 @@ class TimeLineViewController: BaseViewController {
         self.collectionView.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         self.collectionView.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor).isActive = true
     }
-    
-    func load() {
-        guard canNextLoad(isRequest: self.isRequest) else {
-            return
-        }
-        self.isRequest = true
-        self.countUpIndex()
-        self.fetchItemsAndUpdateTimeLine()
+}
+
+extension TimeLineViewController: TimeLineDataStoreDelegate {
+    func update() {
+        self.updateCollection(item: dataStore.items, oldItem: dataStore.oldItems)
     }
     
-    private func fetchItemsAndUpdateTimeLine() {
-        let model = Network.APIRequestModel(path: Network.domain + "search/photos", method: .get, querys: ["page": String(self.requestIndex),"per_page": "20", "query": self.keyword])
-        network.request(model: model) { [weak self] (result) in
-            self?.assignEndedSession(result: result)
-        }
-    }
-    
-    private func assignEndedSession(result: Result<Data?, Error>) {
-        switch result {
-        case .success(let json):
-            self.decodeArrayOfItemsAndUpdateTimeLine(json: json)
-        case .failure(let _):
-            fatalError()
-        }
-    }
-    
-    private func decodeArrayOfItemsAndUpdateTimeLine(json: Data?) {
-        let items: SerchItems? = try? decodeSerchItems(json: json)
-        self.updateLimitIndex(index: items?.totalPages ?? 0)
-        self.appendItemAndUpdateTimeLine(items: items?.items ?? [])
-    }
-    
-    private func appendItemAndUpdateTimeLine(items: [Item]) {
-        let oldItems: [Item] = self.items
-        self.appendItems(items: items)
-        self.updateCollection(item: self.items, oldItem: oldItems)
-    }
-    
-    private func canNextLoad(isRequest: Bool) -> Bool {
-        return self.requestIndex < self.limitIndex && !isRequest
-    }
-    
-    private func countUpIndex() {
-        self.requestIndex += 1
-    }
-    
-    private func updateLimitIndex(index: Int) {
-        self.limitIndex = index
-    }
-    
-    private func decodeArrayOfItems(json: Data?) throws -> [Item] {
-        let serchItems = try decodeSerchItems(json: json)
-        return convertToArrayOfItem(item: serchItems)
-    }
-    
-    private func convertToArrayOfItem(item: SerchItems) -> [Item] {
-        return item.items
-    }
-    
-    private func decodeSerchItems(json: Data?) throws -> SerchItems {
-        guard let json = json else {
-            throw NSError(domain: "json is nil", code: 0, userInfo: nil)
-        }
-        return try decodeSerchItems(json: json)
-    }
-    
-    private func decodeSerchItems(json: Data) throws -> SerchItems {
-        let decoder = JSONDecoder()
-        var serchItems: SerchItems?
-        do {
-            serchItems = try decoder.decode(SerchItems.self, from: json)
-        } catch {
-            debugLog(items: error)
-        }
-        guard serchItems != nil else {
-            throw NSError(domain: "SerchItems is nil", code: 0, userInfo: nil)
-        }
-        return serchItems!
-    }
-    
-    private func appendItems(items: [Item]) {
-        self.items.append(contentsOf: items)
+    func error(err: Error) {
+        debugLog(items: err)
     }
 }
 
@@ -171,7 +102,7 @@ extension TimeLineViewController: UICollectionViewDelegate {
         let bottom = height - yOffset
         
         if bottom <= self.view.frame.height * 0.4 {
-            load()
+            self.dataStore.requestToUpdate()
         }
     }
 }
