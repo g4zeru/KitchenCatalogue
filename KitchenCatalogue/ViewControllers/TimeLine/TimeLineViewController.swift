@@ -9,11 +9,7 @@
 import UIKit
 
 class TimeLineViewController: BaseViewController {
-    private var items: [Item] = [] {
-        didSet(oldvalue) {
-            updateCollection(item: self.items, oldItem: oldvalue)
-        }
-    }
+    private var items: [Item] = []
     
     private let network = Network.shared
     private let keyword = "kitchen"
@@ -28,14 +24,12 @@ class TimeLineViewController: BaseViewController {
     
     private var requestIndex: Int = 0
     private var limitIndex: Int = 1
-    private var canLoad: Bool = true
+    private var isRequest: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.setupLayout()
-        
-        self.canLoad = true
         self.load()
     }
     
@@ -66,34 +60,86 @@ class TimeLineViewController: BaseViewController {
     }
     
     func load() {
-        self.canLoad = false
-        guard self.requestIndex < self.limitIndex else {
+        guard canNextLoad(isRequest: self.isRequest) else {
             return
         }
-        self.requestIndex += 1
+        self.isRequest = true
+        self.countUpIndex()
+        self.fetchItemsAndUpdateTimeLine()
+    }
+    
+    private func fetchItemsAndUpdateTimeLine() {
         let model = Network.APIRequestModel(path: Network.domain + "search/photos", method: .get, querys: ["page": String(self.requestIndex),"per_page": "20", "query": self.keyword])
         network.request(model: model) { [weak self] (result) in
-            switch result {
-            case .success(let json):
-                guard let unwrapJson = json else {
-                    debugLog(items: "json data is nil")
-                    return
-                }
-                let decoder = JSONDecoder()
-                do {
-                    let items: SerchItems = try decoder.decode(SerchItems.self, from: unwrapJson)
-                    self?.limitIndex = items.totalPages
-                    self?.items.append(contentsOf: items.items)
-                } catch {
-                    debugLog(items: "error: \(error)")
-                    return
-                }
-                testLog(items: "requestIndex: \(String(describing: self?.requestIndex))")
-                testLog(items: "limitIndex: \(String(describing: self?.limitIndex))")
-            case .failure(let error):
-                debugLog(items: "error: \(error)")
-            }
+            self?.assignEndedSession(result: result)
         }
+    }
+    
+    private func assignEndedSession(result: Result<Data?, Error>) {
+        switch result {
+        case .success(let json):
+            self.decodeArrayOfItemsAndUpdateTimeLine(json: json)
+        case .failure(let _):
+            fatalError()
+        }
+    }
+    
+    private func decodeArrayOfItemsAndUpdateTimeLine(json: Data?) {
+        let items: SerchItems? = try? decodeSerchItems(json: json)
+        self.updateLimitIndex(index: items?.totalPages ?? 0)
+        self.appendItemAndUpdateTimeLine(items: items?.items ?? [])
+    }
+    
+    private func appendItemAndUpdateTimeLine(items: [Item]) {
+        let oldItems: [Item] = self.items
+        self.appendItems(items: items)
+        self.updateCollection(item: self.items, oldItem: oldItems)
+    }
+    
+    private func canNextLoad(isRequest: Bool) -> Bool {
+        return self.requestIndex < self.limitIndex && !isRequest
+    }
+    
+    private func countUpIndex() {
+        self.requestIndex += 1
+    }
+    
+    private func updateLimitIndex(index: Int) {
+        self.limitIndex = index
+    }
+    
+    private func decodeArrayOfItems(json: Data?) throws -> [Item] {
+        let serchItems = try decodeSerchItems(json: json)
+        return convertToArrayOfItem(item: serchItems)
+    }
+    
+    private func convertToArrayOfItem(item: SerchItems) -> [Item] {
+        return item.items
+    }
+    
+    private func decodeSerchItems(json: Data?) throws -> SerchItems {
+        guard let json = json else {
+            throw NSError(domain: "json is nil", code: 0, userInfo: nil)
+        }
+        return try decodeSerchItems(json: json)
+    }
+    
+    private func decodeSerchItems(json: Data) throws -> SerchItems {
+        let decoder = JSONDecoder()
+        var serchItems: SerchItems?
+        do {
+            serchItems = try decoder.decode(SerchItems.self, from: json)
+        } catch {
+            debugLog(items: error)
+        }
+        guard serchItems != nil else {
+            throw NSError(domain: "SerchItems is nil", code: 0, userInfo: nil)
+        }
+        return serchItems!
+    }
+    
+    private func appendItems(items: [Item]) {
+        self.items.append(contentsOf: items)
     }
 }
 
@@ -124,7 +170,7 @@ extension TimeLineViewController: UICollectionViewDelegate {
         let yOffset = scrollView.contentOffset.y + scrollView.frame.height
         let bottom = height - yOffset
         
-        if bottom <= self.view.frame.height * 0.4 && canLoad == true {
+        if bottom <= self.view.frame.height * 0.4 {
             load()
         }
     }
@@ -145,7 +191,7 @@ extension TimeLineViewController: TimeLineCollectionLayoutDelegate {
                     }
                     self.collectionView.insertItems(at: paths)
                 }, completion: { (completion) in
-                    self.canLoad = true
+                    self.isRequest = false
                 })
             } else {
                 self.collectionView.reloadData()
