@@ -69,7 +69,11 @@ extension TimeLineViewController: TimeLineDataStoreDelegate {
         self.updateCollection(item: dataStore.items, oldItem: dataStore.oldItems)
     }
     
-    func error(err: Error) {
+    func decodingError(err: Error) {
+        debugLog(items: err)
+    }
+    
+    func notFoundNetworkResponce(err: Error) {
         debugLog(items: err)
     }
 }

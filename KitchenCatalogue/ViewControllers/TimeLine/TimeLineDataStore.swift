@@ -10,7 +10,8 @@ import Foundation
 
 protocol TimeLineDataStoreDelegate: class {
     func update()
-    func error(err: Error)
+    func decodingError(err: Error)
+    func notFoundNetworkResponce(err: Error)
 }
 
 class TimeLineDataStore {
@@ -71,8 +72,8 @@ class TimeLineDataStore {
                 self.isRequest = false
             }
             self.decodeAndFlagToUpdate(json: json)
-        case .failure( _):
-            fatalError()
+        case .failure(let error):
+            self.delegate?.notFoundNetworkResponce(err: error)
         }
     }
     
@@ -83,7 +84,7 @@ class TimeLineDataStore {
             updateLimitIndex(index: limitIndex)
             self.delegate?.update()
         } catch {
-            self.delegate?.error(err: error)
+            self.delegate?.decodingError(err: error)
         }
     }
     

@@ -41,7 +41,13 @@ extension TimeLineDataStoreTests: TimeLineDataStoreDelegate {
         networkExpectation?.fulfill()
     }
     
-    func error(err: Error) {
+    func decodingError(err: Error) {
+        debugLog(items: err)
+        XCTAssert(false)
+        networkExpectation?.fulfill()
+    }
+    
+    func notFoundNetworkResponce(err: Error) {
         debugLog(items: err)
         XCTAssert(false)
         networkExpectation?.fulfill()
