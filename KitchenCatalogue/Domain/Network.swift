@@ -8,15 +8,15 @@
 
 import Foundation
 
-public class Network {
-    public enum HTTPMethod: String {
+class Network {
+    enum HTTPMethod: String {
         case get = "GET"
         case post = "POST"
         case put = "PUT"
         case delete = "DELETE"
     }
     
-    public struct APIRequestModel {
+    struct APIRequestModel {
         let path: String
         let method: HTTPMethod
         let querys: [String: String]
@@ -32,44 +32,40 @@ public class Network {
     }
     
     ///https://unsplash.com/documentation#public-actions
-    static public let clientID: String = "556a9cc2bac95d14f83721ef48dedba2e890bcceba04bdd9d505060df710d1bf"
+    static let clientID: String = "556a9cc2bac95d14f83721ef48dedba2e890bcceba04bdd9d505060df710d1bf"
     ///https://unsplash.com/documentation#location
-    static public let domain: String = "https://api.unsplash.com/"
+    static let domain: String = "https://api.unsplash.com/"
     
-    static public let shared: Network = Network()
+    static let shared: Network = Network()
     
     private let cashePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
     private let timeoutInterval: TimeInterval = 20
     
-    public func request(model: APIRequestModel, completion: @escaping (Result<Data?, Error>) -> Void) {
-        let session = URLSession.shared
+    func request(model: APIRequestModel, completion: @escaping (Result<Data?, Error>) -> Void) {
         let request: URLRequest
         do {
-            request = try self.packRequest(model: model)
+            request = try self.generateURLRequest(model: model)
         } catch {
             completion(.failure(error))
             return
         }
-        let task: URLSessionDataTask = session.dataTask(with: request) {(data, response, error) in
-            if !(response is HTTPURLResponse) {
-                completion(.failure(NSError(domain: "response is nil", code: 0, userInfo: nil)))
-            }
+        let task: URLSessionDataTask = generateSessionDataTask(request: request, completion: completion)
+        task.resume()
+    }
+    
+    private func generateSessionDataTask(request: URLRequest, completion: @escaping (Result<Data?, Error>)->Void) -> URLSessionDataTask {
+        return URLSession.shared.dataTask(with: request) {(data, response, error) in
             if let error = error {
                 completion(.failure(error))
             }
             completion(.success(data))
         }
-        task.resume()
     }
     
-    private func packRequest(model: APIRequestModel) throws -> URLRequest {
-        guard let url = self.insertQuery(path: model.path, querys: model.querys) else {
-            throw NSError(domain: "url is invalid", code: 0, userInfo: ["urs_strings": model.path])
-        }
+    private func generateURLRequest(model: APIRequestModel) throws -> URLRequest {
+        let url = try self.insertQuery(path: model.path, querys: model.querys)
         var request = URLRequest(url: url, cachePolicy: self.cashePolicy, timeoutInterval: self.timeoutInterval)
-        
         request.httpMethod = model.method.rawValue
-        
         self.insertHedder(request: &request, headers: model.headers)
         try self.insertParameter(request: &request, parameters: model.parameters)
         return request
@@ -89,9 +85,12 @@ public class Network {
         request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: JSONSerialization.WritingOptions.sortedKeys)
     }
     
-    private func insertQuery(path: String, querys: [String: String]) -> URL? {
+    private func insertQuery(path: String, querys: [String: String]) throws -> URL {
         let pathInsertedQuery: String = Network.insertQuery(path: path, querys: querys)
-        return URL(string: pathInsertedQuery)
+        guard let url = URL(string: pathInsertedQuery) else {
+            throw NSError(domain: "url is invalid", code: 0, userInfo: ["urs_strings": path])
+        }
+        return url
     }
     
     static func insertQuery(path: String, querys: [String: String]) -> String {
