@@ -94,7 +94,7 @@ public class UnsplashAuth {
         return uriStrings == redirectURI
     }
     
-    public static func generateAuthorizeFullPath(keys: [UnsplashAuth.RequestKey]) -> URL? {
+    public func generateAuthorizeFullPath(keys: [UnsplashAuth.RequestKey]) -> URL? {
         var path = UnsplashAuth.shared.authURI
         var query = String()
         for (index, key) in keys.enumerated() {

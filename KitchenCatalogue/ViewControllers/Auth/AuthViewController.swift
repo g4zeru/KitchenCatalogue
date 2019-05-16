@@ -33,7 +33,7 @@ class AuthWebViewController: BaseViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.webView.load(URLRequest(url: UnsplashAuth.generateAuthorizeFullPath(keys: [.public, .writeUser])!))
+        self.webView.load(URLRequest(url: UnsplashAuth.shared.generateAuthorizeFullPath(keys: [.public, .writeUser])!))
     }
     
     private func setupLayout() {
