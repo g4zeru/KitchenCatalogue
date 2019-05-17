@@ -9,7 +9,11 @@
 import UIKit
 
 class TimeLineViewController: BaseViewController {
-    private var items: [Item] = []
+    private var items: [Item] = [] {
+        didSet(oldvalue) {
+            updateCollection(item: self.items, oldItem: oldvalue)
+        }
+    }
     
     private let network = Network.shared
     private let keyword = "kitchen"
@@ -24,17 +28,15 @@ class TimeLineViewController: BaseViewController {
     
     private var requestIndex: Int = 0
     private var limitIndex: Int = 1
-    private var isRequest: Bool = false
-    
-    private var dataStore: TimeLineDataStore = TimeLineDataStore(path: Network.domain + "search/photos",
-                                                                 keyword: "kitchen",
-                                                                 perItem: 20)
+    private var canLoad: Bool = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.setupLayout()
-        self.dataStore.requestToUpdate()
+        
+        self.canLoad = true
+        self.load()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -62,19 +64,36 @@ class TimeLineViewController: BaseViewController {
         self.collectionView.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         self.collectionView.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor).isActive = true
     }
-}
-
-extension TimeLineViewController: TimeLineDataStoreDelegate {
-    func update() {
-        self.updateCollection(item: dataStore.items, oldItem: dataStore.oldItems)
-    }
     
-    func decodingError(err: Error) {
-        debugLog(items: err)
-    }
-    
-    func notFoundNetworkResponce(err: Error) {
-        debugLog(items: err)
+    func load() {
+        self.canLoad = false
+        guard self.requestIndex < self.limitIndex else {
+            return
+        }
+        self.requestIndex += 1
+        let model = Network.APIRequestModel(path: Network.domain + "search/photos", method: .get, querys: ["page": String(self.requestIndex),"per_page": "20", "query": self.keyword])
+        network.request(model: model) { [weak self] (result) in
+            switch result {
+            case .success(let json):
+                guard let unwrapJson = json else {
+                    debugLog(items: "json data is nil")
+                    return
+                }
+                let decoder = JSONDecoder()
+                do {
+                    let items: SerchItems = try decoder.decode(SerchItems.self, from: unwrapJson)
+                    self?.limitIndex = items.totalPages
+                    self?.items.append(contentsOf: items.items)
+                } catch {
+                    debugLog(items: "error: \(error)")
+                    return
+                }
+                testLog(items: "requestIndex: \(String(describing: self?.requestIndex))")
+                testLog(items: "limitIndex: \(String(describing: self?.limitIndex))")
+            case .failure(let error):
+                debugLog(items: "error: \(error)")
+            }
+        }
     }
 }
 
@@ -105,8 +124,8 @@ extension TimeLineViewController: UICollectionViewDelegate {
         let yOffset = scrollView.contentOffset.y + scrollView.frame.height
         let bottom = height - yOffset
         
-        if bottom <= self.view.frame.height * 0.4 {
-            self.dataStore.requestToUpdate()
+        if bottom <= self.view.frame.height * 0.4 && canLoad == true {
+            load()
         }
     }
 }
@@ -126,7 +145,7 @@ extension TimeLineViewController: TimeLineCollectionLayoutDelegate {
                     }
                     self.collectionView.insertItems(at: paths)
                 }, completion: { (completion) in
-                    self.isRequest = false
+                    self.canLoad = true
                 })
             } else {
                 self.collectionView.reloadData()
