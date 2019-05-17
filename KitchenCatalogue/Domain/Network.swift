@@ -56,7 +56,7 @@ class Network {
     private func generateSessionDataTask(request: URLRequest, completion: @escaping (Result<Data?, Error>)->Void) -> URLSessionDataTask {
         return URLSession.shared.dataTask(with: request) {(data, response, error) in
             if let error = error {
-                completion(.failure(error))
+                completion(.failure(NetworkErrorGenerator(error: error as NSError).generate()))
             }
             completion(.success(data))
         }

@@ -24,6 +24,7 @@
 		B963D544226790E1005DD7D7 /* ExtensionFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = B963D543226790E1005DD7D7 /* ExtensionFont.swift */; };
 		B98FDB1D228D770400493240 /* TimeLineDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98FDB1C228D770400493240 /* TimeLineDataStore.swift */; };
 		B98FDB20228D818000493240 /* TimeLineDataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98FDB1F228D818000493240 /* TimeLineDataStoreTests.swift */; };
+		B98FDB29228DBD9000493240 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98FDB28228DBD9000493240 /* NetworkError.swift */; };
 		B9979A6B2265C95C00BACE6F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9979A6A2265C95C00BACE6F /* AppDelegate.swift */; };
 		B9979A6D2265C95C00BACE6F /* TimeLineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9979A6C2265C95C00BACE6F /* TimeLineViewController.swift */; };
 		B9979A722265C96100BACE6F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B9979A712265C96100BACE6F /* Assets.xcassets */; };
@@ -78,6 +79,7 @@
 		B98FDB1C228D770400493240 /* TimeLineDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineDataStore.swift; sourceTree = "<group>"; };
 		B98FDB1E228D818000493240 /* KitchenCatalogueTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KitchenCatalogueTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		B98FDB1F228D818000493240 /* TimeLineDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineDataStoreTests.swift; sourceTree = "<group>"; };
+		B98FDB28228DBD9000493240 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		B9979A672265C95C00BACE6F /* KitchenCatalogue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KitchenCatalogue.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9979A6A2265C95C00BACE6F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B9979A6C2265C95C00BACE6F /* TimeLineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineViewController.swift; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 			isa = PBXGroup;
 			children = (
 				B9979A9A2265CB0200BACE6F /* Network.swift */,
+				B98FDB28228DBD9000493240 /* NetworkError.swift */,
 				B9979AA32265E99B00BACE6F /* Entity */,
 			);
 			path = Domain;
@@ -446,6 +449,7 @@
 				B98FDB1D228D770400493240 /* TimeLineDataStore.swift in Sources */,
 				B963D544226790E1005DD7D7 /* ExtensionFont.swift in Sources */,
 				B9261095228AF9B30029CFF1 /* UserDefaults.swift in Sources */,
+				B98FDB29228DBD9000493240 /* NetworkError.swift in Sources */,
 				B9979AA52266178400BACE6F /* SerchItems.swift in Sources */,
 				B9979A9E2265D0E700BACE6F /* ExtensionPrint.swift in Sources */,
 				B9979A9B2265CB0200BACE6F /* Network.swift in Sources */,
