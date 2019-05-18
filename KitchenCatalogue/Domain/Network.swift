@@ -85,13 +85,17 @@ class Network {
     }
     
     private func insertParameter(request: inout URLRequest, parameters: [String: String]) throws -> Void {
-        request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: JSONSerialization.WritingOptions.sortedKeys)
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: JSONSerialization.WritingOptions.sortedKeys)
+        } catch {
+            throw RequestError.encode(.body)
+        }
     }
     
     private func insertQuery(path: String, querys: [String: String]) throws -> URL {
         let pathInsertedQuery: String = Network.insertQuery(path: path, querys: querys)
         guard let url = URL(string: pathInsertedQuery) else {
-            throw NSError(domain: "url is invalid", code: 0, userInfo: ["urs_strings": path])
+            throw RequestError.incorrctlyValue(.query)
         }
         return url
     }
