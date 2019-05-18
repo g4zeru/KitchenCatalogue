@@ -10,9 +10,6 @@ import UIKit
 class TimeLineViewController: BaseViewController {
     private var items: [Item] = []
     
-    private let network = Network.shared
-    private let keyword = "kitchen"
-    
     private var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         
@@ -20,10 +17,6 @@ class TimeLineViewController: BaseViewController {
         collectionView.register(TimeLineCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         return collectionView
     }()
-    
-    private var requestIndex: Int = 0
-    private var limitIndex: Int = 1
-    private var isRequest: Bool = false
     
     private var dataStore: TimeLineDataStore = TimeLineDataStore(path: Network.domain + "search/photos",
                                                                  keyword: "kitchen",
@@ -124,9 +117,7 @@ extension TimeLineViewController: TimeLineCollectionLayoutDelegate {
                         paths.append(IndexPath(item: i, section: 0))
                     }
                     self.collectionView.insertItems(at: paths)
-                }, completion: { (completion) in
-                    self.isRequest = false
-                })
+                }, completion: nil)
             } else {
                 self.collectionView.reloadData()
             }

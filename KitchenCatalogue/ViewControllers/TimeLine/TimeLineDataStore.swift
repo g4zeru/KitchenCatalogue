@@ -26,7 +26,7 @@ class TimeLineDataStore {
     private(set) var isRequest: Bool
     private(set) var requestIndex: Int
     private(set) var limitIndex: Int
-    private let network: Network
+    private var network: Network?
     weak var delegate: TimeLineDataStoreDelegate?
     
     init(path: String, keyword: String, perItem: Int = 10) {
@@ -36,7 +36,6 @@ class TimeLineDataStore {
         self.items = []
         self.oldItems = []
         self.isRequest = false
-        self.network = Network.shared
         self.requestIndex = 0
         self.limitIndex = 0
     }
@@ -58,13 +57,14 @@ class TimeLineDataStore {
     
     func fetchItemsAndFlagToUpdate() {
         let model = Network.APIRequestModel(path: self.path, method: .get, querys: ["page": String(self.requestIndex),"per_page": String(perItem), "query": self.keyword])
-        network.request(model: model) { [weak self] (result) in
-            self?.assignEndedSession(result: result)
+        self.network = Network(requestModel: model)
+        network?.request() { [weak self] (result) in
+            self?.assignResponce(responce: result)
         }
     }
     
-    func assignEndedSession(result: Result<Data?, Error>) {
-        switch result {
+    func assignResponce(responce: Result<Data?, Error>) {
+        switch responce {
         case .success(let json):
             defer {
                 self.countUpIndex()
