@@ -30,21 +30,24 @@ class Network {
             self.parameters = parameters
         }
     }
+    let requestModel: APIRequestModel
+    
+    init(requestModel: APIRequestModel) {
+        self.requestModel = requestModel
+    }
     
     ///https://unsplash.com/documentation#public-actions
     static let clientID: String = "556a9cc2bac95d14f83721ef48dedba2e890bcceba04bdd9d505060df710d1bf"
     ///https://unsplash.com/documentation#location
     static let domain: String = "https://api.unsplash.com/"
     
-    static let shared: Network = Network()
-    
     private let cashePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
     private let timeoutInterval: TimeInterval = 20
     
-    func request(model: APIRequestModel, completion: @escaping (Result<Data?, Error>) -> Void) {
+    func request(completion: @escaping (Result<Data?, Error>) -> Void) {
         let request: URLRequest
         do {
-            request = try self.generateURLRequest(model: model)
+            request = try self.generateURLRequest(model: self.requestModel)
         } catch {
             completion(.failure(error))
             return
@@ -82,13 +85,17 @@ class Network {
     }
     
     private func insertParameter(request: inout URLRequest, parameters: [String: String]) throws -> Void {
-        request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: JSONSerialization.WritingOptions.sortedKeys)
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: JSONSerialization.WritingOptions.sortedKeys)
+        } catch {
+            throw RequestError.encode(.body)
+        }
     }
     
     private func insertQuery(path: String, querys: [String: String]) throws -> URL {
         let pathInsertedQuery: String = Network.insertQuery(path: path, querys: querys)
         guard let url = URL(string: pathInsertedQuery) else {
-            throw NSError(domain: "url is invalid", code: 0, userInfo: ["urs_strings": path])
+            throw RequestError.incorrctlyValue(.query)
         }
         return url
     }
