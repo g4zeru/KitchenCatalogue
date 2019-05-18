@@ -30,21 +30,24 @@ class Network {
             self.parameters = parameters
         }
     }
+    let requestModel: APIRequestModel
+    
+    init(requestModel: APIRequestModel) {
+        self.requestModel = requestModel
+    }
     
     ///https://unsplash.com/documentation#public-actions
     static let clientID: String = "556a9cc2bac95d14f83721ef48dedba2e890bcceba04bdd9d505060df710d1bf"
     ///https://unsplash.com/documentation#location
     static let domain: String = "https://api.unsplash.com/"
     
-    static let shared: Network = Network()
-    
     private let cashePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
     private let timeoutInterval: TimeInterval = 20
     
-    func request(model: APIRequestModel, completion: @escaping (Result<Data?, Error>) -> Void) {
+    func request(completion: @escaping (Result<Data?, Error>) -> Void) {
         let request: URLRequest
         do {
-            request = try self.generateURLRequest(model: model)
+            request = try self.generateURLRequest(model: self.requestModel)
         } catch {
             completion(.failure(error))
             return
