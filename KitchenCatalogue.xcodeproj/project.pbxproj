@@ -26,6 +26,7 @@
 		B98E9F28228FD5CA00D086E4 /* TimeLineDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98E9F27228FD5CA00D086E4 /* TimeLineDataStore.swift */; };
 		B98E9F2A228FD74400D086E4 /* TimeLineDataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98E9F29228FD74400D086E4 /* TimeLineDataStoreTests.swift */; };
 		B98FDB29228DBD9000493240 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98FDB28228DBD9000493240 /* NetworkError.swift */; };
+		B995571A2291069E004E6902 /* CodableError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99557192291069E004E6902 /* CodableError.swift */; };
 		B9979A6B2265C95C00BACE6F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9979A6A2265C95C00BACE6F /* AppDelegate.swift */; };
 		B9979A6D2265C95C00BACE6F /* TimeLineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9979A6C2265C95C00BACE6F /* TimeLineViewController.swift */; };
 		B9979A722265C96100BACE6F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B9979A712265C96100BACE6F /* Assets.xcassets */; };
@@ -82,6 +83,7 @@
 		B98E9F27228FD5CA00D086E4 /* TimeLineDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineDataStore.swift; sourceTree = "<group>"; };
 		B98E9F29228FD74400D086E4 /* TimeLineDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineDataStoreTests.swift; sourceTree = "<group>"; };
 		B98FDB28228DBD9000493240 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		B99557192291069E004E6902 /* CodableError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableError.swift; sourceTree = "<group>"; };
 		B9979A672265C95C00BACE6F /* KitchenCatalogue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KitchenCatalogue.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9979A6A2265C95C00BACE6F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B9979A6C2265C95C00BACE6F /* TimeLineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineViewController.swift; sourceTree = "<group>"; };
@@ -232,6 +234,7 @@
 				B9979A9A2265CB0200BACE6F /* Network.swift */,
 				B98E9F23228FD04A00D086E4 /* RequestError.swift */,
 				B98FDB28228DBD9000493240 /* NetworkError.swift */,
+				B99557192291069E004E6902 /* CodableError.swift */,
 				B9979AA32265E99B00BACE6F /* Entity */,
 			);
 			path = Domain;
@@ -449,6 +452,7 @@
 				B9979AAB22661AE300BACE6F /* ExtensionUIColor.swift in Sources */,
 				B9979AA22265E97D00BACE6F /* User.swift in Sources */,
 				B94FA7232271569800E96FDC /* AuthViewController.swift in Sources */,
+				B995571A2291069E004E6902 /* CodableError.swift in Sources */,
 				B9979A6B2265C95C00BACE6F /* AppDelegate.swift in Sources */,
 				B963D544226790E1005DD7D7 /* ExtensionFont.swift in Sources */,
 				B9261095228AF9B30029CFF1 /* UserDefaults.swift in Sources */,
